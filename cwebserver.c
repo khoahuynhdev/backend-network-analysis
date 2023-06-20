@@ -33,5 +33,17 @@ int main () {
     perror("Socket failed");
     exit(EXIT_FAILURE);
   }
+
+  // bind socket
+  address.sin_family = AF_INET; // ipv4
+  address.sin_addr.s_addr = INADDR_ANY; // listen 0.0.0.0 interfaces
+  address.sin_port = htons(PORT);
+
+  // finally we bind the socket
+  if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+    // the bind fail
+    perror("Bind failed");
+    exit(EXIT_FAILURE);
+  }
   return 0;
 }
