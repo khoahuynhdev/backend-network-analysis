@@ -45,5 +45,18 @@ int main () {
     perror("Bind failed");
     exit(EXIT_FAILURE);
   }
+
+  // create the queues (to handle connection)
+  // listen for clients, with 10 backlogs (10 connections in accept queue)
+  if (listen(server_fd, 10) < 0) {
+    perror("Listen failed");
+    exit(EXIT_FAILURE);
+  }
+
+  // @NOTE: the kernel will finish the handshake
+  // [x,x,x,x,x,x,x,x,x,x]
+  // [c,x,x,x,x,x,x,x,x,x] -> have 1 connection
+  // [x,x,x,x,x,x,x,x,x,x] -> when the backend call accept, it removes the connection
+  // [c,c,c,c,c,c,c,c,c,c] -> the backend never call accept, the queue is full -> connection error
   return 0;
 }
