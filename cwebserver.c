@@ -23,5 +23,15 @@ int main () {
   // define the application buffer where we receives the requests
   // data will be moved from received buffer to here
   char buffer[APP_MAX_BUFFER] = {0}; // the entire buffer will be init to zero
+
+  // create socket
+  // AF_INET or AF_INET4 is for IPv4, AF_INET6 is for IPv6
+  // SOCK_STREAM means TCP, SOCK_DGRAM means UDP
+  if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+    // if it failed to create a file, an fd, just exit
+    // why can it fail? maybe memory not enough
+    perror("Socket failed");
+    exit(EXIT_FAILURE);
+  }
   return 0;
 }
