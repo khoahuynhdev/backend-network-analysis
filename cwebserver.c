@@ -58,5 +58,35 @@ int main () {
   // [c,x,x,x,x,x,x,x,x,x] -> have 1 connection
   // [x,x,x,x,x,x,x,x,x,x] -> when the backend call accept, it removes the connection
   // [c,c,c,c,c,c,c,c,c,c] -> the backend never call accept, the queue is full -> connection error
+
+  // we loop forever
+  while (1) {
+    printf("\nWaiting for a connection...\n");
+    // accept a client connection client_fd == connection
+    // this blocks
+    // if the accept queue is empty, we are stuck here...
+    if ((client_fd = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&address_len)) < 0) {
+      perror("Accept failed");
+      exit(EXIT_FAILURE);
+    }
+
+    // read the data from the OS receive buffer to the application (buffer)
+    // this is essentially reading HTTP request
+    // don't bite more than you can chew APP_MAX_BUFFER
+    read(client_fd, buffer, APP_MAX_BUFFER);
+    printf("%s\n", buffer);
+
+    // we send the request by writing to the socket send buffer in the OS
+    char *http_response = "HTTP/1.1 200 OK\n"
+                        "Content-Type: text/plain\n"
+                        "Content-Length: 13\n\n"
+                        "Hello world!\n";
+    // write to the socket
+    // send queue os
+    write(client_fd, http_response, strlen(http_response));
+
+    // close the client socket (terminate the TCP connection)
+    close(client_fd);
+  }
   return 0;
 }
